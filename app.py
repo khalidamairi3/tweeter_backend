@@ -1,6 +1,7 @@
 from flask import Flask,request
 import dbcreds
 import users
+import user_login
 
 app = Flask(__name__)
 
@@ -14,6 +15,18 @@ def getUsers():
         return users.patch_user()
     elif request.method=="DELETE":
         return users.delete_user()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/login",methods=["POST","DELETE"])
+def login():
+    if request.method == "POST":
+        return user_login.post()
+    elif request.method=="DELETE":
+        return user_login.delete()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
     
         
 

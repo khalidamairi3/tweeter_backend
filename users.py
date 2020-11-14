@@ -1,4 +1,5 @@
 import dbcreds
+import secrets
 import json
 from flask import  Response, request
 import mariadb
@@ -63,6 +64,7 @@ def post_user():
     conn = None
     cursor = None
     result = None
+    user=None
     email=data.get("email")
     username = data.get("username")
     password = data.get("password")
@@ -74,6 +76,12 @@ def post_user():
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
             cursor.execute("INSERT INTO users (username,email,password,bio,birthday) VALUES (?, ?, ?, ?, ?)", [ data["username"], data["email"] , data["password"] , data["bio"] , data["birthdate"]])
+            conn.commit()
+            cursor.execute("SELECT * FROM users WHERE email = ?",[email,])
+            user = cursor.fetchone()
+            print(user)
+            loginToken=secrets.token_urlsafe(16)
+            cursor.execute("INSERT INTO `session` (user_id, login_token) VALUES (?,?)",[user[4],loginToken,])
             conn.commit()
             result = cursor.rowcount
         except mariadb.OperationalError as e:
@@ -92,12 +100,12 @@ def post_user():
             if result == 1 :
                 user = {
 
-                        
+                    "userId":user[4],    
                     "email":data["email"],
                     "username":data["username"],
-                    "password":data["password"],
                     "bio":data["bio"],
-                    "birthdate":data["birthdate"]
+                    "birthdate":data["birthdate"],
+                    "loginToken":loginToken
                         
                     }
                 return Response(json.dumps(user,default=str),mimetype="application/json",status=201)
