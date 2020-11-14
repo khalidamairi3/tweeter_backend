@@ -7,6 +7,7 @@ import mariadb
 def get():
     params=request.args
     userId= params.get("userId")
+    print(userId)
     conn = None
     cursor = None
     result = None
@@ -14,7 +15,7 @@ def get():
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM users INNER JOIN  user_follows uf ON id=uf.user_id WHERE uf.followId =?" ,[userId,])
+            cursor.execute("SELECT * FROM users INNER JOIN  user_follows uf ON id=uf.followId WHERE uf.user_id =?" ,[userId,])
             result=cursor.fetchall()
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"

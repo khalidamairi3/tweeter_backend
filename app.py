@@ -3,7 +3,7 @@ import dbcreds
 import users
 import user_login
 import follows
-
+import followers
 app = Flask(__name__)
 
 @app.route("/api/users",methods=["GET","POST","PATCH","DELETE"])
@@ -39,7 +39,11 @@ def follows_api():
     else :
         Response("not supported", mimetype="text/html", status=500)
 
-    
-        
+@app.route("/api/followers",methods=["GET"])
+def followers_api():
+    if request.method == "GET":
+        return followers.get()    
+    else :
+        Response("not supported", mimetype="text/html", status=500) 
 
     
