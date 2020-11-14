@@ -2,6 +2,7 @@ from flask import Flask,request
 import dbcreds
 import users
 import user_login
+import follows
 
 app = Flask(__name__)
 
@@ -24,6 +25,17 @@ def login():
         return user_login.post()
     elif request.method=="DELETE":
         return user_login.delete()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/follows",methods=["GET","POST","DELETE"])
+def follows_api():
+    if request.method == "GET":
+        return follows.get()
+    elif request.method == "POST":
+        return follows.post()
+    elif request.method=="DELETE":
+        return follows.delete()
     else :
         Response("not supported", mimetype="text/html", status=500)
 

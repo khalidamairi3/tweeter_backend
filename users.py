@@ -124,8 +124,6 @@ def patch_user():
     bio = data.get("bio")
     birthdate = data.get("birthdate")
     loginToken=data.get("loginToken")
-    print (loginToken)
-    print(bio)
     try:
         conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
@@ -145,8 +143,7 @@ def patch_user():
         message = "connection error or wrong entry"
     except mariadb.IntegrityError as e:
         message = "Something is wrong with your data. probably there is another user using the same username or the same email"
-    except mariadb.ProgrammingError as e:
-        print(e)
+    except:
         message =  "somthing went wrong"
     finally:
         if cursor != None:
