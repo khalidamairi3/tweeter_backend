@@ -77,11 +77,10 @@ def post_user():
             cursor = conn.cursor()
             cursor.execute("INSERT INTO users (username,email,password,bio,birthday) VALUES (?, ?, ?, ?, ?)", [ data["username"], data["email"] , data["password"] , data["bio"] , data["birthdate"]])
             conn.commit()
-            cursor.execute("SELECT * FROM users WHERE email = ?",[email,])
-            user = cursor.fetchone()
+            userId = cursor.lastrowid
             print(user)
             loginToken=secrets.token_urlsafe(16)
-            cursor.execute("INSERT INTO `session` (user_id, login_token) VALUES (?,?)",[user[4],loginToken,])
+            cursor.execute("INSERT INTO `session` (user_id, login_token) VALUES (?,?)",[userId,loginToken,])
             conn.commit()
             result = cursor.rowcount
         except mariadb.OperationalError as e:
@@ -100,7 +99,7 @@ def post_user():
             if result == 1 :
                 user = {
 
-                    "userId":user[4],    
+                    "userId":userId,    
                     "email":data["email"],
                     "username":data["username"],
                     "bio":data["bio"],
