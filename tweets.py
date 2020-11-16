@@ -104,7 +104,7 @@ def patch():
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
-            cursor.execute("SELECT u.id FROM users u INNER JOIN `session` s ON u.id=s.user_id  WHERE login_token=?",[loginToken,])
+            cursor.execute("SELECT s.user_id FROM `session` s WHERE login_token=?",[loginToken,])
             user = cursor.fetchone()
             cursor.execute("SELECT user_id FROM tweet WHERE id=?",[tweetId,])
             tweetUser =cursor.fetchone()
@@ -112,6 +112,8 @@ def patch():
                 cursor.execute("UPDATE tweet SET content=? WHERE id=?", [ content, tweetId])
                 conn.commit()
                 result = cursor.rowcount
+            else:
+                message="not authorized"
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:
@@ -150,7 +152,7 @@ def delete():
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
-            cursor.execute("SELECT u.id FROM users u INNER JOIN `session` s ON u.id=s.user_id  WHERE login_token=?",[loginToken,])
+            cursor.execute("SELECT s.user_id FROM `session` s WHERE login_token=?",[loginToken,])
             user = cursor.fetchone()
             cursor.execute("SELECT user_id FROM tweet WHERE id=?",[tweetId,])
             tweetUser =cursor.fetchone()
@@ -161,6 +163,8 @@ def delete():
                 cursor.execute("DELETE FROM tweet WHERE id = ?",[tweetId,])
                 conn.commit()
                 result = cursor.rowcount
+            else:
+                message="not authorized"
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:
@@ -175,7 +179,7 @@ def delete():
                 conn.close()
 
             if result == 1 :
-                return Response("SUCCES" ,mimetype="text/html",status=204)
+                return Response("SUCCESS" ,mimetype="text/html",status=204)
             return Response(message ,mimetype="text/html",status=400)
     else:
         return Response("There is missing data" ,mimetype="text/html",status=400)

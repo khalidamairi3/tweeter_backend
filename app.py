@@ -5,6 +5,7 @@ import user_login
 import follows
 import followers
 import tweets
+import comments
 app = Flask(__name__)
 
 @app.route("/api/users",methods=["GET","POST","PATCH","DELETE"])
@@ -57,6 +58,19 @@ def tweet():
         return tweets.patch()
     elif request.method=="DELETE":
         return tweets.delete()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/comments",methods=["GET","POST","PATCH","DELETE"])
+def comment():
+    if request.method == "GET":
+        return comments.get()
+    elif request.method=="POST":
+        return comments.post()
+    elif request.method=="PATCH":
+        return comments.patch()
+    elif request.method=="DELETE":
+        return comments.delete()
     else :
         Response("not supported", mimetype="text/html", status=500)
    
