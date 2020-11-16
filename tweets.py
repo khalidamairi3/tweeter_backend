@@ -53,7 +53,7 @@ def post():
     loginToken=data.get("loginToken")
     content = data.get("content")
     
-    if content and content!="" and loginToken and loginToken !=None : 
+    if content and content!="" and loginToken!="" and loginToken !=None : 
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
@@ -100,7 +100,7 @@ def patch():
     content = data.get("content")
     tweetId = data.get("tweetId")
     
-    if content and content!="" and loginToken and loginToken !=None and tweetId : 
+    if content and content!="" and loginToken and loginToken !="" and tweetId : 
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
