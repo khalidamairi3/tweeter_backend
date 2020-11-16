@@ -43,7 +43,7 @@ def get_users():
             if(conn != None):
                 conn.rollback()
                 conn.close()
-    if result :
+    if result or result ==[]:
         users=[]
         for item in result:
             user = {

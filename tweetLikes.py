@@ -29,7 +29,7 @@ def get():
                 conn.rollback()
                 conn.close()
 
-            if result:
+            if result or result ==[]:
                 likes = []
                 for row in result:
 
@@ -62,7 +62,7 @@ def get():
                 conn.rollback()
                 conn.close()
 
-            if result:
+            if result or result ==[]:
                 likes = []
                 for row in result:
 

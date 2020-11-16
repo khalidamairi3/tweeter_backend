@@ -7,6 +7,7 @@ import followers
 import tweets
 import comments
 import tweetLikes
+import comment_likes
 app = Flask(__name__)
 
 @app.route("/api/users",methods=["GET","POST","PATCH","DELETE"])
@@ -83,6 +84,17 @@ def tweet_likes():
         return tweetLikes.post()
     elif request.method=="DELETE":
         return tweetLikes.delete()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/comment-likes",methods=["GET","POST","DELETE"])
+def commentLikes():
+    if request.method == "GET":
+        return comment_likes.get()
+    elif request.method=="POST":
+        return comment_likes.post()
+    elif request.method=="DELETE":
+        return comment_likes.delete()
     else :
         Response("not supported", mimetype="text/html", status=500)
    
