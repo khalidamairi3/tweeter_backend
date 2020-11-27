@@ -16,7 +16,7 @@ def get():
             cursor = conn.cursor()
             cursor.execute("SELECT cl.comment_id, u.id, u.username FROM users u INNER JOIN comment_likes cl ON u.id=cl.user_id  WHERE cl.comment_id=?",[commentId,])
             result = cursor.fetchall()
-            print(result)
+            
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:
@@ -93,12 +93,19 @@ def post():
             user = cursor.fetchone()
             cursor.execute("INSERT INTO comment_likes (comment_id,user_id)VALUES(?,?)", [commentId,user[0] ,])
             conn.commit()
+            cursor.execute("SELECT user_id from comment WHERE id = ? ",[commentId,])
+            notified = cursor.fetchone()
+            cursor.execute("INSERT INTO notifications (user_id, notified_id,message) VALUES (?,?,?)",[user[0],notified[0],"Liked your comment"])
+            conn.commit()
             result = cursor.rowcount
         except mariadb.OperationalError as e:
+            print(e)
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:
+            print(e)
             message = "Something is wrong with your data. probably there is another user using the same username or the same email"
         except Exception  as e:
+            print(e)
             message = e
         finally:
             if(cursor != None):
@@ -131,7 +138,7 @@ def delete():
             cursor.execute("DELETE FROM comment_likes WHERE comment_id =? AND user_id=?", [commentId,user[0] ,])
             conn.commit()
             result = cursor.rowcount
-            print(result)
+            
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:

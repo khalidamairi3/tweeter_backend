@@ -90,7 +90,11 @@ def post():
             cursor = conn.cursor()
             cursor.execute("SELECT user_id FROM `session` WHERE login_token=?",[loginToken,])
             user = cursor.fetchone()
+            cursor.execute("SELECT user_id from tweet WHERE id = ? ",[tweetId,])
+            notified = cursor.fetchone()
             cursor.execute("INSERT INTO tweet_likes (tweet_id,user_id)VALUES(?,?)", [tweetId,user[0] ,])
+            conn.commit()
+            cursor.execute("INSERT INTO notifications (user_id, notified_id,message) VALUES (?,?,?)",[user[0],notified[0],"Liked your tweet"])
             conn.commit()
             result = cursor.rowcount
         except mariadb.OperationalError as e:
@@ -130,7 +134,6 @@ def delete():
             cursor.execute("DELETE FROM tweet_likes WHERE tweet_id =? AND user_id=?", [tweetId,user[0] ,])
             conn.commit()
             result = cursor.rowcount
-            print(result)
         except mariadb.OperationalError as e:
             message = "connection error or wrong entry"
         except mariadb.IntegrityError as e:

@@ -11,38 +11,39 @@ def get():
     conn = None
     cursor = None
     result = None
-    if userId:
-        try:
-            conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
-            cursor = conn.cursor()
+    try:
+        conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
+        cursor = conn.cursor()
+        if userId:
             cursor.execute("SELECT * FROM tweet t INNER JOIN users u on t.user_id = u.id WHERE t.user_id =?" ,[userId,])
-            result=cursor.fetchall()
-        except mariadb.OperationalError as e:
-            message = "connection error or wrong entry"
-        except:
-            message =  "somthing went wrong"
-        finally:
-            if(cursor != None):
-                cursor.close()
-            if(conn != None):
-                conn.rollback()
-                conn.close()
-            if result or result==[]:
-                tweets=[]
-                for row in result:
-                    tweet = {
-                    "tweetId":row[0],
-                    "userId":row[3],    
-                    "username":row[4],
-                    "content":row[1],
-                    "createdAt":row[2],   
-                    }
-                    tweets.append(tweet)
-                return Response(json.dumps(tweets,default=str),mimetype="application/json",status=200)
-            else:
-                return Response("failed",mimetype="text/html",status=400)
-    else:
-        return Response("somthing went wrong",mimetype="text/html",status=400)
+        else:
+            cursor.execute("SELECT * FROM tweet t INNER JOIN users u on t.user_id = u.id")
+        result=cursor.fetchall()
+    except mariadb.OperationalError as e:
+        message = "connection error or wrong entry"
+    except:
+        message =  "somthing went wrong"
+    finally:
+        if(cursor != None):
+            cursor.close()
+        if(conn != None):
+            conn.rollback()
+            conn.close()
+        if result or result==[]:
+            tweets=[]
+            for row in result:
+                tweet = {
+                "tweetId":row[0],
+                "userId":row[3],    
+                "username":row[4],
+                "content":row[1],
+                "createdAt":row[2],   
+                }
+                tweets.append(tweet)
+            return Response(json.dumps(tweets,default=str),mimetype="application/json",status=200)
+        else:
+            return Response("failed",mimetype="text/html",status=400)
+    
 
 def post():
     data = request.json

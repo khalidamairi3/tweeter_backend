@@ -8,7 +8,12 @@ import tweets
 import comments
 import tweetLikes
 import comment_likes
+import notifications
+
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route("/api/users",methods=["GET","POST","PATCH","DELETE"])
 def getUsers():
@@ -95,6 +100,15 @@ def commentLikes():
         return comment_likes.post()
     elif request.method=="DELETE":
         return comment_likes.delete()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/notifications",methods=["GET","PATCH","DELETE"])
+def Notifications():
+    if request.method == "GET":
+        return notifications.get()
+    elif request.method=="PATCH":
+        return notifications.patch()
     else :
         Response("not supported", mimetype="text/html", status=500)
    

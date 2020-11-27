@@ -98,6 +98,10 @@ def post():
             createdAt=datetime.datetime.now()
             cursor.execute("INSERT INTO comment(tweet_id,content, created_at, user_id)VALUES(?,?, ?, ?)", [ tweetId,content, createdAt , user[0] ,])
             conn.commit()
+            cursor.execute("SELECT user_id from tweet WHERE id = ? ",[tweetId,])
+            notified = cursor.fetchone()
+            cursor.execute("INSERT INTO notifications (user_id, notified_id,message) VALUES (?,?,?)",[user[0],notified[0],"commented on your tweet"])
+            conn.commit()
             result = cursor.rowcount
             commentId = cursor.lastrowid
         except mariadb.OperationalError as e:
@@ -137,8 +141,13 @@ def post():
                 createdAt=datetime.datetime.now()
                 cursor.execute("INSERT INTO comment(comment_id,content, created_at, user_id)VALUES(?,?, ?, ?)", [ commentId ,content, createdAt , user[0] ,])
                 conn.commit()
-                result = cursor.rowcount
                 commentid = cursor.lastrowid
+                cursor.execute("SELECT user_id from comment WHERE id = ? ",[commentId,])
+                notified = cursor.fetchone()
+                cursor.execute("INSERT INTO notifications (user_id, notified_id,message) VALUES (?,?,?)",[user[0],notified[0],"Replied to your comment"])
+                conn.commit()
+                result = cursor.rowcount
+               
         except mariadb.OperationalError as e:
             print(e)
             message = "connection error or wrong entry"

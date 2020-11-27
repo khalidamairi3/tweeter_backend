@@ -7,7 +7,6 @@ import mariadb
 def get():
     params=request.args
     userId= params.get("userId")
-    print(userId)
     conn = None
     cursor = None
     result = None
@@ -61,6 +60,8 @@ def post():
             cursor.execute("SELECT user_id from `session` WHERE login_token =?" ,[loginToken,])
             userId = cursor.fetchone()
             cursor.execute("INSERT INTO user_follows (user_id, followId) VALUES (?,?)",[userId[0],followId,])
+            conn.commit()
+            cursor.execute("INSERT INTO notifications (user_id, notified_id,message) VALUES (?,?,?)",[userId[0],followId,"followed you"])
             conn.commit()
             rows=cursor.rowcount
         except mariadb.OperationalError as e:
