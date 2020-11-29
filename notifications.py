@@ -34,7 +34,7 @@ def get():
                 "userId":row[1],    
                 "username":row[5],
                 "message":row[3],
-                "viewStaus":row[4],   
+                "viewStatus":row[4],   
                 }
                 notifications.append(notification)
             return Response(json.dumps(notifications,default=str),mimetype="application/json",status=200)
@@ -42,15 +42,15 @@ def get():
             return Response("failed",mimetype="text/html",status=400)
 def patch():
     data=request.json
-    notificationId= data.get("notificationId")
+    userId= data.get("userId")
     conn = None
     cursor = None
     result = None
     try:
         conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
         cursor = conn.cursor()
-        if notificationId:
-            cursor.execute("UPDATE notifications SET view_status = ? WHERE id =?" ,[ 1 , notificationId])
+        if userId:
+            cursor.execute("UPDATE notifications SET view_status = ? WHERE notified_id =?" ,[ 1 , userId])
         conn.commit()
         result=cursor.rowcount
     except mariadb.OperationalError as e:
@@ -64,14 +64,8 @@ def patch():
         if(conn != None):
             conn.rollback()
             conn.close()
-        if result == 1:
-            
-            notification = {
-            "notificationId":notificationId,
-            "viewStaus": 1,   
-            }
-                
-            return Response(json.dumps(notification,default=str),mimetype="application/json",status=200)
+        if result != None:                
+            return Response("Success",mimetype="text/html",status=200)
         else:
             return Response("failed",mimetype="text/html",status=400)
     
