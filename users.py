@@ -3,6 +3,7 @@ import secrets
 import json
 from flask import  Response, request
 import mariadb
+
 def get_users():
     result = None
     params = request.args
@@ -75,7 +76,7 @@ def post_user():
         try:
             conn = mariadb.connect(user=dbcreds.user,password=dbcreds.password, host=dbcreds.host,port=dbcreds.port, database=dbcreds.database)
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO users (username,email,password,bio,birthday) VALUES (?, ?, ?, ?, ?)", [ data["username"], data["email"] , data["password"] , data["bio"] , data["birthdate"]])
+            cursor.execute("INSERT INTO users (username,email,password,bio,birthday) VALUES (?, ?, ?, ?, ?)", [ username, email , password , bio , birthdate])
             conn.commit()
             userId = cursor.lastrowid
             loginToken=secrets.token_urlsafe(16)

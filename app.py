@@ -9,6 +9,8 @@ import comments
 import tweetLikes
 import comment_likes
 import notifications
+import messages
+import chats
 
 from flask_cors import CORS
 app = Flask(__name__)
@@ -111,4 +113,21 @@ def Notifications():
         return notifications.patch()
     else :
         Response("not supported", mimetype="text/html", status=500)
-   
+
+@app.route("/api/messages",methods=["GET","POST"])
+def texting():
+    if request.method == "GET":
+        return messages.get()
+    elif request.method=="POST":
+        return messages.post()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
+
+@app.route("/api/chats",methods=["GET","POST"])
+def chatss():
+    if request.method == "GET":
+        return chats.get()
+    elif request.method=="POST":
+        return chats.post()
+    else :
+        Response("not supported", mimetype="text/html", status=500)
